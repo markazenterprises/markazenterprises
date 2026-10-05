@@ -1,0 +1,26 @@
+name: Build Hostinger website
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+      - name: Package Hostinger files
+        run: cd out && zip -r ../markaz-hostinger-build.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: markaz-hostinger-build
+          path: markaz-hostinger-build.zip
